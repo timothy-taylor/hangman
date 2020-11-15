@@ -41,6 +41,7 @@ class Game
     File.open("lib/.save", "w"){ |file| file.write(game_state) }
     @game_saved = true
   end
+
 end
 
 class Round
@@ -52,11 +53,14 @@ class Round
   end
 
   def word_check(word, guess)
+    no_letter_found = true
     word.split('').each_with_index { |letter, ix|
       if letter == guess
         @game.working_array[ix] = guess
+        no_letter_found = false
       end
     }
+    @game.num_of_guesses += 1 if no_letter_found
     fmt_w_array = @game.working_array.map { |e| e || '_' }
     puts fmt_w_array.join(' ')
   end
@@ -71,11 +75,11 @@ class Round
         puts "Incorrect input, please guess only one letter!"
         player_guess
       else
-        @game.num_of_guesses += 1
         return guess
       end
     end
   end
+
 end
 
 class Start
@@ -117,7 +121,7 @@ class Start
     @word = word_finder
     @num_of_guesses = 0
     @working_array = Array.new(@word.length)
-
+    
     hangman = Game.new(@word, @num_of_guesses, @working_array)
     while hangman.game_over_conditions
       hangman.new_round
@@ -131,11 +135,13 @@ class Start
     @l_word = loaded.fetch("word")
     @l_turn = loaded.fetch("turn")
     @l_current = loaded.fetch("current")
+    
     hangman = Game.new(@l_word, @l_turn, @l_current)
     while hangman.game_over_conditions
       hangman.new_round
     end
   end
+
 end
 
 lets_play = Start.new
