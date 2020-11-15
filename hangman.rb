@@ -54,7 +54,7 @@ class Round
 
   def word_check(word, guess)
     no_letter_found = true
-    word.split('').each_with_index { |letter, ix|
+    word.downcase.split('').each_with_index { |letter, ix|
       if letter == guess
         @game.working_array[ix] = guess
         no_letter_found = false
@@ -84,6 +84,7 @@ end
 
 class Start
   def initialize
+    puts `clear`
     puts "Let's play hangman!"
     @new_game
     check_for_saved_game
@@ -102,19 +103,6 @@ class Start
         load_game
       end
     end
-  end
-
- def word_finder
-    File.open("lib/5desk.txt", "r"){ |file|
-      words = file.readlines
-      word = words[rand(words.length)].strip
-      unless word.length.between?(5, 12)
-        word_finder
-      else
-        puts "New game! The word is #{word.length} letters long."
-        return word
-      end
-    }
   end
 
   def play_new_game
@@ -140,6 +128,21 @@ class Start
     while hangman.game_over_conditions
       hangman.new_round
     end
+  end
+
+  private
+
+  def word_finder
+    File.open("lib/5desk.txt", "r"){ |file|
+      words = file.readlines
+      word = words[rand(words.length)].strip
+      unless word.length.between?(5, 12)
+        word_finder
+      else
+        puts "New game! The word is #{word.length} letters long."
+        return word
+      end
+    }
   end
 
 end
